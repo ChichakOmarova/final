@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # ===============================================
+  # 1. POSTGRESQL (VERSION 12)
+  # ===============================================
+  postgres-db:
+    image: postgres:12-alpine
+    container_name: kidsworld-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: orkhanalizade
+      POSTGRES_PASSWORD: murad2016
+      # Postgres 12 versiyası ilə bu konfiqurasiya normal işləməlidir
+      POSTGRES_INITDB_ARGS: "-E UTF-8 --auth-host=md5 --auth-local=md5"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # ===============================================
+  # 2. REDIS (Caching üçün)
+  # ===============================================
+  redis:
+    image: redis:7-alpine
+    container_name: kidsworld-redis
+    ports:
+      - "6379:6379"
+
+  # ===============================================
+  # 3. ZOOKEEPER
+  # ===============================================
+  zookeeper:
+    image: 'confluentinc/cp-zookeeper:7.6.0'
+    container_name: kidsworld-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  # ===============================================
+  # 4. KAFKA
+  # ===============================================
+  kafka:
+    image: 'confluentinc/cp-kafka:7.6.0'
+    container_name: kidstinyworld-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092, PLAINTEXT_HOST://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "task_completion_events:1:1"
+
+  # ===============================================
+  # 5. SPRING BOOT APPLICATION (Əsas DB Məlumatları Məcburi Ötürülür)
+  # ===============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kidsworld-app
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      - postgres-db
+      - redis
+      - kafka
+      - zookeeper
+
+    environment:
+      # BU DƏFƏ DB AUTENTİFİKASİYASINI MƏCBURİ KİMİ ÖTÜRÜRÜK.
+      # Spring Boot avtomatik olaraq bu dəyişənləri oxumalıdır.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/kidstinyworld_db
+      SPRING_DATASOURCE_USERNAME: kidsworld_user
+      SPRING_DATASOURCE_PASSWORD: supersecretpassword
+
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+
+volumes:
+  postgres_data:

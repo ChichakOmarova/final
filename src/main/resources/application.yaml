@@ -1,0 +1,49 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kidstinyworld
+
+  # DB Bağlantı Detalları
+  datasource:
+    url: jdbc:postgresql://postgres-db:5432/orkhanalizade
+    username: postgres
+    password: murad2016
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        # DB Dialect-i əl ilə təyin etmək
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Kafka Topic Adları (Əlavə edildi!)
+  kafka:
+    topic:
+      completion: task_completion_events # <<< Kafka Xətası Üçün ƏLAVƏ EDİLDİ
+    consumer:
+      group-id: kidsworld-consumer-group-1
+  # Mail konfiqurasiyası
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ciciomarova20061012@gmail.com
+    password: sgbo idka bxmq lhgn
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# JWT Secret
+jwt:
+  secret: NDdhNjhYQjZJdTV5cE4zU0U3dDJ0QkF6cjl5cDlEbk1iMnQ3R1pDMTFqVjQ0czgyYjQ5eG01Q0N1ejQ2c25C
+
+# Scheduling aktivləşdirilsin
+scheduling:
+  enable: true

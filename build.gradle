@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.1'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'com.learn'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // LAYİHƏ ASILILIQLARI (DEPENDENCIES)
+
+    // 1. Core Spring Boot, JPA, Web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // 2. Security & Validation (Əsas HƏLL)
+    implementation 'org.springframework.boot:spring-boot-starter-security' // <<< Əlavə edildi
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // <<< Əlavə edildi
+
+    // 3. Redis, Kafka, Mail (Əsas HƏLL)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.kafka:spring-kafka' // Kafka əlavə edildi
+    implementation 'org.springframework.boot:spring-boot-starter-mail' // Mail əlavə edildi
+
+    // 4. Postgres & Lombok
+    runtimeOnly 'org.postgresql:postgresql'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 5. JWT (Token yaratmaq və yoxlamaq üçün)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    // 6. Development Tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' // Devtools əlavə edildi
+
+    // 7. Test Dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
