@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Tiny World - Learning Adventure</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-background">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+    </div>
+
+    <!-- Auth Container -->
+    <div class="container" id="auth-container">
+        <!-- Login Form -->
+        <div class="auth-card" id="login-card">
+            <div class="card-header">
+                <div class="logo">
+                    <span class="logo-icon">🌟</span>
+                    <h1>Kids Tiny World</h1>
+                </div>
+                <p class="subtitle">Welcome back! Let's continue the adventure!</p>
+            </div>
+            <form id="login-form" class="auth-form">
+                <div class="input-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span>Login</span>
+                    <span class="btn-loader"></span>
+                </button>
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="#" id="show-register">Sign up</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- Register Form -->
+        <div class="auth-card hidden" id="register-card">
+            <div class="card-header">
+                <div class="logo">
+                    <span class="logo-icon">🎨</span>
+                    <h1>Join the Adventure</h1>
+                </div>
+                <p class="subtitle">Create your account and start learning!</p>
+            </div>
+            <form id="register-form" class="auth-form">
+                <div class="input-group">
+                    <label for="register-username">Username</label>
+                    <input type="text" id="register-username" name="username" required minlength="3" maxlength="50">
+                </div>
+                <div class="input-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" name="password" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span>Register</span>
+                    <span class="btn-loader"></span>
+                </button>
+                <p class="auth-switch">
+                    Already have an account? 
+                    <a href="#" id="show-login">Login</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alert-container"></div>
+    </div>
+
+    <!-- Dashboard Container (Hidden initially) -->
+    <div class="dashboard-container hidden" id="dashboard-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <span class="logo-icon">🌟</span>
+                <span>Kids Tiny World</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-page="dashboard">
+                    <span>🏠</span> <span class="nav-text" data-key="nav.dashboard">Dashboard</span>
+                </button>
+                <button class="nav-btn" data-page="children">
+                    <span>👶</span> <span class="nav-text" data-key="nav.children">Children</span>
+                </button>
+                <button class="nav-btn" data-page="coloring">
+                    <span>🎨</span> <span class="nav-text" data-key="nav.coloring">Coloring</span>
+                </button>
+                <button class="nav-btn" data-page="activities">
+                    <span>🎯</span> <span class="nav-text" data-key="nav.activities">Activities</span>
+                </button>
+                <button class="nav-btn" data-page="stats">
+                    <span>📊</span> <span class="nav-text" data-key="nav.stats">Stats</span>
+                </button>
+                <button class="nav-btn" data-page="profile">
+                    <span>👤</span> <span class="nav-text" data-key="nav.profile">Profile</span>
+                </button>
+                <button class="nav-btn" data-page="about">
+                    <span>ℹ️</span> <span class="nav-text" data-key="nav.about">About</span>
+                </button>
+                <button class="nav-btn hidden" data-page="admin" id="nav-admin-btn">
+                    <span>⚙️</span> <span class="nav-text" data-key="nav.admin">Admin</span>
+                </button>
+                <div class="language-selector">
+                    <select id="language-selector" class="language-select">
+                        <option value="en">🇬🇧 English</option>
+                        <option value="az">🇦🇿 Azərbaycan</option>
+                        <option value="tr">🇹🇷 Türkçe</option>
+                    </select>
+                </div>
+                <button class="nav-btn" id="logout-btn">
+                    <span>🚪</span> <span class="nav-text" data-key="nav.logout">Logout</span>
+                </button>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div class="page active" id="page-dashboard">
+                <div class="page-header">
+                    <h2>Welcome Back! 👋</h2>
+                    <p>Manage your children's learning journey</p>
+                </div>
+                <div class="stats-grid" id="dashboard-stats">
+                    <!-- Stats cards will be populated here -->
+                </div>
+                <div class="children-preview" id="children-preview">
+                    <h3>Your Children</h3>
+                    <div class="children-list" id="dashboard-children">
+                        <!-- Children cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Children Page -->
+            <div class="page" id="page-children">
+                <div class="page-header">
+                    <h2>Manage Children 👶</h2>
+                    <button class="btn btn-primary" id="add-child-btn">
+                        <span>➕</span> Add Child
+                    </button>
+                </div>
+                <div class="children-grid" id="children-grid">
+                    <!-- Children cards will be populated here -->
+                </div>
+            </div>
+
+            <!-- Activities Page -->
+            <div class="page" id="page-activities">
+                <div class="page-header">
+                    <h2>Activities 🎯</h2>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-category="">All</button>
+                        <button class="filter-btn" data-category="COLORING">Coloring</button>
+                        <button class="filter-btn" data-category="MATH">Math</button>
+                        <button class="filter-btn" data-category="ENGLISH">English</button>
+                        <button class="filter-btn" data-category="WORLD_VIEW">World View</button>
+                    </div>
+                </div>
+                <div class="activities-grid" id="activities-grid">
+                    <!-- Activity cards will be populated here -->
+                </div>
+            </div>
+
+            <!-- Stats Page -->
+            <div class="page" id="page-stats">
+                <div class="page-header">
+                    <h2>Statistics & Leaderboard 📊</h2>
+                </div>
+                <div class="stats-content">
+                    <div class="leaderboard-section">
+                        <h3>🏆 Daily Winners</h3>
+                        <div class="leaderboard" id="leaderboard">
+                            <!-- Leaderboard will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coloring Page -->
+            <div class="page" id="page-coloring">
+                <div class="page-header">
+                    <h2>🎨 Coloring Activities</h2>
+                    <p>Fun coloring activities for kids!</p>
+                    <button class="btn btn-primary hidden" id="add-coloring-activity-btn">
+                        <span>➕</span> Add Activity
+                    </button>
+                </div>
+                <div class="coloring-container">
+                    <div class="coloring-categories" id="coloring-categories">
+                        <!-- Coloring activities will be loaded here -->
+                    </div>
+                    <div class="coloring-canvas-section hidden" id="coloring-canvas-section">
+                        <div class="canvas-header">
+                            <button class="btn btn-secondary" id="back-to-coloring">← Back</button>
+                            <h3 id="coloring-title"></h3>
+                        </div>
+                        <div class="coloring-canvas-container">
+                            <canvas id="coloring-canvas"></canvas>
+                        </div>
+                        <div class="color-palette" id="color-palette">
+                            <button class="color-btn" data-color="#FF6B6B" style="background: #FF6B6B;"></button>
+                            <button class="color-btn" data-color="#4ECDC4" style="background: #4ECDC4;"></button>
+                            <button class="color-btn" data-color="#45B7D1" style="background: #45B7D1;"></button>
+                            <button class="color-btn" data-color="#FFA07A" style="background: #FFA07A;"></button>
+                            <button class="color-btn" data-color="#98D8C8" style="background: #98D8C8;"></button>
+                            <button class="color-btn" data-color="#F7DC6F" style="background: #F7DC6F;"></button>
+                            <button class="color-btn" data-color="#BB8FCE" style="background: #BB8FCE;"></button>
+                            <button class="color-btn" data-color="#85C1E2" style="background: #85C1E2;"></button>
+                            <button class="color-btn" data-color="#F1948A" style="background: #F1948A;"></button>
+                            <button class="color-btn" data-color="#82E0AA" style="background: #82E0AA;"></button>
+                            <input type="color" id="custom-color" class="color-btn custom-color-input">
+                        </div>
+                        <div class="canvas-actions">
+                            <button class="btn btn-secondary" id="clear-canvas">Clear</button>
+                            <button class="btn btn-primary" id="save-coloring">Save & Complete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Page -->
+            <div class="page" id="page-profile">
+                <div class="page-header">
+                    <h2>👤 My Profile</h2>
+                </div>
+                <div class="profile-container">
+                    <div class="profile-card">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar" id="profile-avatar-display">
+                                <span id="avatar-initials"></span>
+                            </div>
+                            <button class="btn btn-primary" id="change-avatar-btn">
+                                <span>📷</span> Change Avatar
+                            </button>
+                        </div>
+                        <div class="profile-info">
+                            <div class="info-item">
+                                <label>Username</label>
+                                <div class="info-value" id="profile-username"></div>
+                            </div>
+                            <div class="info-item">
+                                <label>Email</label>
+                                <div class="info-value" id="profile-email"></div>
+                            </div>
+                            <div class="info-item">
+                                <label>User ID</label>
+                                <div class="info-value" id="profile-id"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-avatar-selector hidden" id="avatar-selector">
+                        <h3>Choose Your Avatar</h3>
+                        <div class="avatar-grid" id="avatar-grid">
+                            <!-- Avatar options will be generated here -->
+                        </div>
+                        <div class="avatar-actions">
+                            <button class="btn btn-secondary" id="cancel-avatar">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Page -->
+            <div class="page" id="page-admin">
+                <div class="page-header">
+                    <h2>⚙️ Admin Panel</h2>
+                </div>
+                <div class="admin-container">
+                    <p>Welcome, admin! Here you can manage application settings.</p>
+                    <!-- Admin features will be added here -->
+                </div>
+            </div>
+
+            <!-- About Page -->
+            <div class="page" id="page-about">
+                <div class="page-header">
+                    <h2>ℹ️ About Kids Tiny World</h2>
+                </div>
+                <div class="about-container">
+                    <div class="about-card">
+                        <div class="about-icon">🌟</div>
+                        <h3>Welcome to Kids Tiny World!</h3>
+                        <p>Kids Tiny World is an educational platform designed to make learning fun and engaging for children. Through interactive activities, games, and challenges, children can learn, grow, and have fun!</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🎨</div>
+                            <h4>Coloring Activities</h4>
+                            <p>Creative coloring exercises to develop artistic skills</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔢</div>
+                            <h4>Math Challenges</h4>
+                            <p>Interactive math problems for skill development</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📚</div>
+                            <h4>English Learning</h4>
+                            <p>Language learning through fun activities</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🌍</div>
+                            <h4>World View</h4>
+                            <p>Educational content about the world around us</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🏆</div>
+                            <h4>Rewards & Points</h4>
+                            <p>Earn points and compete on the leaderboard</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h4>Progress Tracking</h4>
+                            <p>Monitor your child's learning progress</p>
+                        </div>
+                    </div>
+                    <div class="about-card">
+                        <h3>Our Mission</h3>
+                        <p>To provide a safe, fun, and educational environment where children can explore, learn, and grow. We believe that learning should be enjoyable and that every child deserves access to quality educational content.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>Contact & Support</h3>
+                        <p>For questions, support, or feedback, please reach out to us through the application or contact your administrator.</p>
+                        <p class="version-info">Version 1.0.0</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit Child -->
+    <div class="modal" id="child-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Child</h3>
+                <button class="modal-close" id="close-modal">&times;</button>
+            </div>
+            <form id="child-form" class="modal-form">
+                <div class="input-group">
+                    <label for="child-name">Child's Name</label>
+                    <input type="text" id="child-name" required>
+                </div>
+                <div class="input-group">
+                    <label for="child-age">Age</label>
+                    <input type="number" id="child-age" min="3" required>
+                </div>
+                <div class="input-group">
+                    <label for="child-avatar">Avatar URL (Optional)</label>
+                    <input type="url" id="child-avatar">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Assign Activity -->
+    <div class="modal" id="assign-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assign Activity</h3>
+                <button class="modal-close" id="close-assign-modal">&times;</button>
+            </div>
+            <form id="assign-form" class="modal-form">
+                <div class="input-group">
+                    <label for="assign-child">Select Child</label>
+                    <select id="assign-child" required>
+                        <option value="">Choose a child...</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="assign-activity">Activity</label>
+                    <input type="text" id="assign-activity" readonly>
+                    <input type="hidden" id="assign-activity-id">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-assign-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Add/Edit Coloring Activity -->
+    <div class="modal" id="coloring-activity-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="coloring-modal-title">Add New Coloring Activity</h3>
+                <button class="modal-close" id="close-coloring-modal">&times;</button>
+            </div>
+            <form id="coloring-activity-form" class="modal-form">
+                <div class="input-group">
+                    <label for="coloring-activity-title">Title</label>
+                    <input type="text" id="coloring-activity-title" required>
+                </div>
+                <div class="input-group">
+                    <label for="coloring-activity-description">Description</label>
+                    <input type="text" id="coloring-activity-description">
+                </div>
+                <div class="input-group">
+                    <label for="coloring-activity-points">Points</label>
+                    <input type="number" id="coloring-activity-points" min="0" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-coloring-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Avatar Upload -->
+    <div class="modal" id="avatar-upload-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Upload Avatar</h3>
+                <button class="modal-close" id="close-avatar-modal">&times;</button>
+            </div>
+            <form id="avatar-upload-form" class="modal-form">
+                <div class="input-group">
+                    <label for="avatar-url">Avatar URL</label>
+                    <input type="url" id="avatar-url" placeholder="https://example.com/avatar.jpg">
+                </div>
+                <div class="input-group">
+                    <label for="avatar-file">Or Upload File</label>
+                    <input type="file" id="avatar-file" accept="image/*">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-avatar-modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Avatar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
