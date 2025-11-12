@@ -17,6 +17,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        // Default user
         if (parentRepository.findByUsername("user") == null) {
             Parent defaultParent = Parent.builder()
                     .username("user")
@@ -25,6 +26,19 @@ public class DataInitializer implements CommandLineRunner {
                     .role(UserRole.USER)
                     .build();
             parentRepository.save(defaultParent);
+            System.out.println("Default user created: user/password");
+        }
+        
+        // Admin user
+        if (parentRepository.findByEmail("admin@example.com") == null) {
+            Parent adminParent = Parent.builder()
+                    .username("admin")
+                    .password(passwordEncoder.encode("admin123"))
+                    .email("admin@example.com")
+                    .role(UserRole.ADMIN)
+                    .build();
+            parentRepository.save(adminParent);
+            System.out.println("Admin user created: admin/admin123");
         }
     }
 }

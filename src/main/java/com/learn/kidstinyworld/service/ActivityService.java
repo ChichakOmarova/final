@@ -2,6 +2,7 @@ package com.learn.kidstinyworld.service;
 
 import com.learn.kidstinyworld.entity.Activity;
 import com.learn.kidstinyworld.enums.ActivityCategory;
+import com.learn.kidstinyworld.exception.ResourceNotFoundException;
 import com.learn.kidstinyworld.repository.ActivityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -62,5 +63,33 @@ public class ActivityService {
         return activityRepository.findAll().stream()
                 .limit(5)
                 .toList();
+    }
+
+    // -----------------------------------------------------------
+    // 5. Fəaliyyəti Yeniləmək
+    // -----------------------------------------------------------
+    @CacheEvict(value = "popularActivities", allEntries = true)
+    public Activity updateActivity(Long id, Activity activity) {
+        Activity existingActivity = activityRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Activity", "id", id));
+        
+        existingActivity.setTitle(activity.getTitle());
+        existingActivity.setDescription(activity.getDescription());
+        existingActivity.setCategory(activity.getCategory());
+        existingActivity.setPointsValue(activity.getPointsValue());
+        existingActivity.setEstimatedDurationMinutes(activity.getEstimatedDurationMinutes());
+        
+        return activityRepository.save(existingActivity);
+    }
+
+    // -----------------------------------------------------------
+    // 6. Fəaliyyəti Silmək
+    // -----------------------------------------------------------
+    @CacheEvict(value = "popularActivities", allEntries = true)
+    public void deleteActivity(Long id) {
+        if (!activityRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Activity", "id", id);
+        }
+        activityRepository.deleteById(id);
     }
 }

@@ -24,8 +24,8 @@ public class Parent implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String username; // Valideynin unikal istifadeci adi
+    @Column(nullable = false)
+    private String username; // Valideynin istifadeci adi (unique deyil, email unique olmalidir)
 
     @Column(nullable = false)
     private String password; // Hashlenmis sifre

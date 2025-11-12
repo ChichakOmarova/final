@@ -174,12 +174,17 @@
             <div class="page" id="page-activities">
                 <div class="page-header">
                     <h2>Activities 🎯</h2>
-                    <div class="filter-group">
-                        <button class="filter-btn active" data-category="">All</button>
-                        <button class="filter-btn" data-category="COLORING">Coloring</button>
-                        <button class="filter-btn" data-category="MATH">Math</button>
-                        <button class="filter-btn" data-category="ENGLISH">English</button>
-                        <button class="filter-btn" data-category="WORLD_VIEW">World View</button>
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-primary hidden" id="add-activity-btn">
+                            <span>➕</span> Add Activity
+                        </button>
+                        <div class="filter-group">
+                            <button class="filter-btn active" data-category="">All</button>
+                            <button class="filter-btn" data-category="COLORING">Coloring</button>
+                            <button class="filter-btn" data-category="MATH">Math</button>
+                            <button class="filter-btn" data-category="ENGLISH">English</button>
+                            <button class="filter-btn" data-category="WORLD_VIEW">World View</button>
+                        </div>
                     </div>
                 </div>
                 <div class="activities-grid" id="activities-grid">
@@ -409,11 +414,11 @@
         </div>
     </div>
 
-    <!-- Modal for Add/Edit Coloring Activity -->
+    <!-- Modal for Add/Edit Activity (Coloring and General) -->
     <div class="modal" id="coloring-activity-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="coloring-modal-title">Add New Coloring Activity</h3>
+                <h3 id="coloring-modal-title">Add New Activity</h3>
                 <button class="modal-close" id="close-coloring-modal">&times;</button>
             </div>
             <form id="coloring-activity-form" class="modal-form">
@@ -423,11 +428,24 @@
                 </div>
                 <div class="input-group">
                     <label for="coloring-activity-description">Description</label>
-                    <input type="text" id="coloring-activity-description">
+                    <textarea id="coloring-activity-description" rows="3" style="resize: vertical;"></textarea>
+                </div>
+                <div class="input-group">
+                    <label for="coloring-activity-category">Category</label>
+                    <select id="coloring-activity-category" required>
+                        <option value="COLORING">Coloring</option>
+                        <option value="MATH">Math</option>
+                        <option value="ENGLISH">English</option>
+                        <option value="WORLD_VIEW">World View</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label for="coloring-activity-points">Points</label>
                     <input type="number" id="coloring-activity-points" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label for="coloring-activity-duration">Estimated Duration (minutes, optional)</label>
+                    <input type="number" id="coloring-activity-duration" min="1">
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancel-coloring-modal">Cancel</button>

@@ -30,9 +30,9 @@ public class AuthService {
     // -----------------------------------------------------------
     public Parent registerParent(ParentRegistrationRequest request) {
 
-        // 1. İstifadəçinin artıq olub-olmadığını yoxla
-        if (parentRepository.findByUsername(request.getUsername()) != null) {
-            throw new UserAlreadyExistsException("Bu istifadəçi adı (" + request.getUsername() + ") artıq mövcuddur.");
+        // 1. Email-in artıq olub-olmadığını yoxla (Email unique olmalidir)
+        if (parentRepository.findByEmail(request.getEmail()) != null) {
+            throw new UserAlreadyExistsException("Bu email (" + request.getEmail() + ") artıq istifadə olunur.");
         }
 
         // 2. Yeni Parent obyekti yarat

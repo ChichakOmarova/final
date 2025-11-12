@@ -10,4 +10,7 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
     // SELECT * FROM parents WHERE username = ?
     // sorğusunu yaradır.
     Parent findByUsername(String username);
+    
+    // Email üçün yoxlama metodu
+    Parent findByEmail(String email);
 }

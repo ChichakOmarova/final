@@ -1,8 +1,8 @@
 # src/main/resources/application-local.yml
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/orkhanalizade
-    username: postgres
+    url: jdbc:postgresql://localhost:5432/kidstinyworld_db
+    username: orkhanalizade
     password: murad2016
   kafka:
     bootstrap-servers: localhost:9092

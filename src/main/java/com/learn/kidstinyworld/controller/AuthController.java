@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -42,14 +43,19 @@ public class AuthController {
         // Token yarandisa, istifadeci detallarini getir
         final UserDetails userDetails = parentDetailsService.loadUserByUsername(request.getUsername());
 
+        // Roles list hazırla
+        List<String> roles = ((Parent) userDetails).getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .toList();
+
         // Cavabi standart JwtResponse formatinda hazirla
-        JwtResponse response = new JwtResponse(
-                jwt,
-                "Bearer",
-                userDetails.getUsername(),
-                ((Parent) userDetails).getId(),
-                ((Parent) userDetails).getEmail()
-        );
+        JwtResponse response = new JwtResponse();
+        response.setToken(jwt);
+        response.setType("Bearer");
+        response.setUsername(userDetails.getUsername());
+        response.setId(((Parent) userDetails).getId());
+        response.setEmail(((Parent) userDetails).getEmail());
+        response.setRoles(roles);
 
         return ResponseEntity.ok(response);
     }

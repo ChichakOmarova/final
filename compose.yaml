@@ -8,9 +8,9 @@ services:
     image: postgres:12-alpine
     container_name: kidsworld-postgres
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: orkhanalizade
-      POSTGRES_PASSWORD: murad2016
+      POSTGRES_DB: kidstinyworld_db
+      POSTGRES_USER: kidsworld_user
+      POSTGRES_PASSWORD: supersecretpassword
       # Postgres 12 versiyası ilə bu konfiqurasiya normal işləməlidir
       POSTGRES_INITDB_ARGS: "-E UTF-8 --auth-host=md5 --auth-local=md5"
     ports:
@@ -82,6 +82,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/kidstinyworld_db
       SPRING_DATASOURCE_USERNAME: kidsworld_user
       SPRING_DATASOURCE_PASSWORD: supersecretpassword
+      SPRING_PROFILES_ACTIVE: docker
 
       SPRING_DATA_REDIS_HOST: redis
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092

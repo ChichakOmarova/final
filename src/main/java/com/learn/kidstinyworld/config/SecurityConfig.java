@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,65 +21,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-//
-//@Configuration
-//@EnableWebSecurity // Security funksiyasini aktiv edir
-//@RequiredArgsConstructor
-//public class SecurityConfig {
-//
-//    private final JwtRequestFilter jwtRequestFilter;
-//    private final ParentDetailsService parentDetailsService;
-//
-//    // 1. Password Encoder (Sifrelerin Hashlenmesi ucun)
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//
-//    // 2. Authentication Manager (AuthService-de istifade etdiyimiz komponent)
-//    @Bean
-//    public AuthenticationManager authenticationManager() {
-//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-//        authProvider.setUserDetailsService(parentDetailsService);
-//        authProvider.setPasswordEncoder(passwordEncoder());
-//        return new ProviderManager(authProvider);
-//    }
-//
-//    // 3. Əsas Security Filter Zənciri (Hansı sorğular yoxlanılsın/yoxlanılmasın)
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//
-//        http
-//                // CORS ve CSRF disable (REST API ucun standart)
-////                .csrf(csrf -> csrf.disable())
-////                .cors(cors -> {}) // CORS ayarlarini application.yml-de qura bilerik
-//
-//                // Session Management: JWT istifade etdiyimiz ucun stateful yox, stateless qoyuruq
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//
-//                // Sorğulara giriş qaydaları (Authorization)
-//                .authorizeHttpRequests(auth -> auth
-//                        // Qeydiyyat ve Login endpoint-leri hamiya aciqdir (filter yoxlamır)
-//                        .requestMatchers("/api/auth/**").permitAll()
-//
-//                        // Actuator endpoint-leri (monitorinq ucun)
-//                        .requestMatchers("/actuator/**").permitAll()
-//
-//                        // Qalan butun sorğular autentifikasiya olunmus istifadeci teleb edir
-//                        .anyRequest().authenticated()
-//                );
-//
-//        // JWT Filteri UsernamePasswordAuthenticationFilter-den EVVEL elave et
-//        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
-//    }
-//}
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtRequestFilter jwtRequestFilter;

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
@@ -7,9 +7,9 @@ spring:
 
   # DB Bağlantı Detalları
   datasource:
-    url: jdbc:postgresql://postgres-db:5432/orkhanalizade
-    username: postgres
-    password: murad2016
+    url: jdbc:postgresql://postgres-db:5432/kidstinyworld_db
+    username: kidsworld_user
+    password: supersecretpassword
 
   jpa:
     hibernate:

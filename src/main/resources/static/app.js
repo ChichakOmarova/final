@@ -199,8 +199,29 @@ function setupEventListeners() {
     // Admin: Add coloring activity
     const addColoringBtn = document.getElementById('add-coloring-activity-btn');
     if (addColoringBtn) {
-        addColoringBtn.addEventListener('click', () => openColoringActivityModal());
+        addColoringBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Add coloring button clicked');
+            openColoringActivityModal(null, 'COLORING');
+        });
+        console.log('Add coloring button event listener attached');
+    } else {
+        console.log('Add coloring button not found during setup');
     }
+    
+    // Admin: Add general activity
+    const addActivityBtn = document.getElementById('add-activity-btn');
+    if (addActivityBtn) {
+        addActivityBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Add activity button clicked');
+            openColoringActivityModal(null, null);
+        });
+        console.log('Add activity button event listener attached');
+    } else {
+        console.log('Add activity button not found during setup');
+    }
+    
     const coloringForm = document.getElementById('coloring-activity-form');
     if (coloringForm) {
         coloringForm.addEventListener('submit', handleColoringActivitySubmit);
@@ -217,7 +238,30 @@ function setupEventListeners() {
 
 // ===== Auth Functions =====
 function isAdmin() {
-    return currentUser && currentUser.roles && currentUser.roles.includes('ROLE_ADMIN');
+    if (!currentUser) {
+        console.log('isAdmin: No current user');
+        return false;
+    }
+    
+    if (!currentUser.roles) {
+        console.log('isAdmin: No roles in user object');
+        return false;
+    }
+    
+    console.log('isAdmin: Checking roles:', currentUser.roles);
+    
+    // Check for both ROLE_ADMIN and ADMIN
+    const isAdminUser = Array.isArray(currentUser.roles) && currentUser.roles.some(role => {
+        const roleStr = String(role);
+        const matches = roleStr === 'ROLE_ADMIN' || 
+                       roleStr === 'ADMIN' || 
+                       roleStr.includes('ADMIN');
+        console.log(`isAdmin: Role "${roleStr}" matches: ${matches}`);
+        return matches;
+    });
+    
+    console.log('isAdmin: Final result:', isAdminUser);
+    return isAdminUser;
 }
 
 function switchAuthForm(formType) {
@@ -273,6 +317,10 @@ async function handleLogin(e) {
             email: data.email || 'N/A',
             roles: data.roles || []
         };
+
+        console.log('Login successful, user data:', currentUser);
+        console.log('User roles:', currentUser.roles);
+        console.log('Is admin?', isAdmin());
 
         localStorage.setItem('authToken', authToken);
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -360,12 +408,18 @@ function showDashboard() {
     document.getElementById('auth-container').classList.add('hidden');
     document.getElementById('dashboard-container').classList.remove('hidden');
     
+    console.log('Showing dashboard');
+    console.log('Current user:', currentUser);
+    console.log('Is admin?', isAdmin());
+    
     const adminNav = document.getElementById('nav-admin-btn');
     if (adminNav) {
         if (isAdmin()) {
             adminNav.classList.remove('hidden');
+            console.log('Admin nav button shown');
         } else {
             adminNav.classList.add('hidden');
+            console.log('Admin nav button hidden');
         }
     }
 
@@ -392,6 +446,8 @@ function navigateToPage(pageName) {
     // Hide admin buttons by default
     const addColoringBtn = document.getElementById('add-coloring-activity-btn');
     if (addColoringBtn) addColoringBtn.classList.add('hidden');
+    const addActivityBtn = document.getElementById('add-activity-btn');
+    if (addActivityBtn) addActivityBtn.classList.add('hidden');
 
     // Load page-specific data
     switch(pageName) {
@@ -403,14 +459,25 @@ function navigateToPage(pageName) {
             break;
         case 'activities':
             loadActivities();
+            if (addActivityBtn) {
+                if (isAdmin()) {
+                    addActivityBtn.classList.remove('hidden');
+                } else {
+                    addActivityBtn.classList.add('hidden');
+                }
+            }
             break;
         case 'stats':
             loadStats();
             break;
         case 'coloring':
             loadColoringActivities();
-            if (isAdmin() && addColoringBtn) {
-                addColoringBtn.classList.remove('hidden');
+            if (addColoringBtn) {
+                if (isAdmin()) {
+                    addColoringBtn.classList.remove('hidden');
+                } else {
+                    addColoringBtn.classList.add('hidden');
+                }
             }
             break;
         case 'profile':
@@ -575,16 +642,28 @@ function openChildModal(child = null) {
     const form = document.getElementById('child-form');
     const title = document.getElementById('modal-title');
     
-    if (child) {
+    if (!modal || !form || !title) {
+        showAlert('Modal elements not found', 'error');
+        return;
+    }
+    
+    if (child && child.id) {
         title.textContent = 'Edit Child';
-        document.getElementById('child-name').value = child.name;
-        document.getElementById('child-age').value = child.age;
-        document.getElementById('child-avatar').value = child.avatarUrl || '';
-        form.dataset.childId = child.id;
+        const nameEl = document.getElementById('child-name');
+        const ageEl = document.getElementById('child-age');
+        const avatarEl = document.getElementById('child-avatar');
+        
+        if (nameEl) nameEl.value = child.name || '';
+        if (ageEl) ageEl.value = child.age || '';
+        if (avatarEl) avatarEl.value = child.avatarUrl || '';
+        
+        form.dataset.childId = child.id.toString();
     } else {
         title.textContent = 'Add New Child';
         form.reset();
-        delete form.dataset.childId;
+        if (form.dataset.childId) {
+            delete form.dataset.childId;
+        }
     }
     
     modal.classList.add('active');
@@ -600,11 +679,30 @@ async function handleChildSubmit(e) {
     const form = e.target;
     const btn = form.querySelector('.btn-primary');
     
+    const nameEl = document.getElementById('child-name');
+    const ageEl = document.getElementById('child-age');
+    const avatarEl = document.getElementById('child-avatar');
+    
+    if (!nameEl || !ageEl) {
+        showAlert('Form fields not found', 'error');
+        return;
+    }
+    
     const childData = {
-        name: document.getElementById('child-name').value,
-        age: parseInt(document.getElementById('child-age').value),
-        avatarUrl: document.getElementById('child-avatar').value || null
+        name: nameEl.value.trim(),
+        age: parseInt(ageEl.value) || 0,
+        avatarUrl: avatarEl ? (avatarEl.value.trim() || null) : null
     };
+
+    if (!childData.name) {
+        showAlert('Child name is required', 'error');
+        return;
+    }
+    
+    if (childData.age < 3) {
+        showAlert('Child age must be at least 3', 'error');
+        return;
+    }
 
     setButtonLoading(btn, true);
 
@@ -625,16 +723,29 @@ async function handleChildSubmit(e) {
             body: JSON.stringify(childData)
         });
 
-        if (!response.ok) throw new Error('Failed to save child');
+        if (!response.ok) {
+            let errorMessage = 'Failed to save child';
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
+            } catch {
+                const errorText = await response.text();
+                errorMessage = errorText || 'Failed to save child';
+            }
+            throw new Error(errorMessage);
+        }
 
-        showAlert(childId ? 'Child updated successfully!' : 'Child added successfully!', 'success');
+        const result = await response.json();
+        showAlert(childId ? 'Child updated successfully! ✨' : 'Child added successfully! ✨', 'success');
         closeChildModal();
         await loadChildren();
-        if (document.getElementById('page-dashboard').classList.contains('active')) {
+        const dashboardPage = document.getElementById('page-dashboard');
+        if (dashboardPage && dashboardPage.classList.contains('active')) {
             loadDashboardData();
         }
 
     } catch (error) {
+        console.error('Error saving child:', error);
         showAlert(error.message || 'Failed to save child', 'error');
     } finally {
         setButtonLoading(btn, false);
@@ -705,9 +816,28 @@ function renderActivities() {
     container.innerHTML = activities.map(activity => createActivityCard(activity)).join('');
     
     // Add event listeners for assign buttons
-    container.querySelectorAll('.btn-assign').forEach((btn, index) => {
-        btn.addEventListener('click', () => openAssignModal(activities[index]));
+    container.querySelectorAll('.btn-assign').forEach(btn => {
+        const activityId = btn.dataset.activityId;
+        const activity = activities.find(a => a.id == activityId);
+        btn.addEventListener('click', () => openAssignModal(activity));
     });
+
+    if (isAdmin()) {
+        container.querySelectorAll('.btn-edit-activity').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const activityId = e.target.dataset.activityId;
+                const activity = activities.find(a => a.id == activityId);
+                openColoringActivityModal(activity, activity.category);
+            });
+        });
+
+        container.querySelectorAll('.btn-delete-activity').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const activityId = e.target.dataset.activityId;
+                deleteActivity(activityId);
+            });
+        });
+    }
 }
 
 function createActivityCard(activity) {
@@ -725,6 +855,11 @@ function createActivityCard(activity) {
         WORLD_VIEW: '🌍 World View'
     };
 
+    const adminButtons = isAdmin() ? `
+        <button class="btn-edit-activity" data-activity-id="${activity.id}">Edit</button>
+        <button class="btn-delete-activity" data-activity-id="${activity.id}">Delete</button>
+    ` : '';
+
     return `
         <div class="activity-card">
             <div class="activity-card-header">
@@ -736,10 +871,53 @@ function createActivityCard(activity) {
             </div>
             <div class="activity-footer">
                 <div class="activity-points">⭐ ${activity.pointsValue || 0} points</div>
-                <button class="btn-assign" data-activity-id="${activity.id}">Assign</button>
+                <div class="activity-actions">
+                    <button class="btn-assign" data-activity-id="${activity.id}">Assign</button>
+                    ${adminButtons}
+                </div>
             </div>
         </div>
     `;
+}
+
+async function deleteActivity(activityId) {
+    if (!confirm('Are you sure you want to delete this activity?')) return;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/activities/${activityId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
+
+        if (!response.ok) {
+            let errorMessage = 'Failed to delete activity';
+            if (response.status === 403) {
+                errorMessage = 'You are not authorized to delete this activity.';
+            } else {
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
+                } catch {
+                    const errorText = await response.text();
+                    errorMessage = errorText || 'Failed to delete activity';
+                }
+            }
+            throw new Error(errorMessage);
+        }
+
+        showAlert('Activity deleted successfully', 'success');
+        
+        // Reload activities
+        const currentPage = document.querySelector('.page.active');
+        if (currentPage && currentPage.id === 'page-coloring') {
+            await loadColoringActivities();
+        } else {
+            await loadActivities();
+        }
+
+    } catch (error) {
+        showAlert(error.message || 'Failed to delete activity', 'error');
+    }
 }
 
 function filterActivities(category) {
@@ -1137,20 +1315,36 @@ async function saveColoring() {
 }
 
 // ===== Admin Functions for Coloring =====
-function openColoringActivityModal(activity = null) {
+function openColoringActivityModal(activity = null, defaultCategory = null) {
     const modal = document.getElementById('coloring-activity-modal');
     const form = document.getElementById('coloring-activity-form');
     const title = document.getElementById('coloring-modal-title');
     
+    if (!modal || !form || !title) {
+        showAlert('Modal elements not found', 'error');
+        return;
+    }
+    
+    const titleEl = document.getElementById('coloring-activity-title');
+    const descEl = document.getElementById('coloring-activity-description');
+    const categoryEl = document.getElementById('coloring-activity-category');
+    const pointsEl = document.getElementById('coloring-activity-points');
+    const durationEl = document.getElementById('coloring-activity-duration');
+    
     if (activity) {
-        title.textContent = 'Edit Coloring Activity';
-        document.getElementById('coloring-activity-title').value = activity.title;
-        document.getElementById('coloring-activity-description').value = activity.description || '';
-        document.getElementById('coloring-activity-points').value = activity.pointsValue || 0;
+        title.textContent = 'Edit Activity';
+        if (titleEl) titleEl.value = activity.title || '';
+        if (descEl) descEl.value = activity.description || '';
+        if (categoryEl) categoryEl.value = activity.category || 'COLORING';
+        if (pointsEl) pointsEl.value = activity.pointsValue || 0;
+        if (durationEl) durationEl.value = activity.estimatedDurationMinutes || '';
         form.dataset.activityId = activity.id;
     } else {
-        title.textContent = 'Add New Coloring Activity';
+        title.textContent = 'Add New Activity';
         form.reset();
+        if (categoryEl && defaultCategory) {
+            categoryEl.value = defaultCategory;
+        }
         delete form.dataset.activityId;
     }
     
@@ -1161,26 +1355,50 @@ function closeColoringActivityModal() {
     const modal = document.getElementById('coloring-activity-modal');
     if (modal) {
         modal.classList.remove('active');
-        document.getElementById('coloring-activity-form').reset();
+        const form = document.getElementById('coloring-activity-form');
+        if (form) {
+            form.reset();
+            delete form.dataset.activityId;
+        }
     }
 }
 
 async function handleColoringActivitySubmit(e) {
     e.preventDefault();
+    
     if (!isAdmin()) {
-        showAlert('You are not authorized to perform this action.', 'error');
+        showAlert('You are not authorized to perform this action. Admin role required.', 'error');
         return;
     }
 
     const form = e.target;
     const btn = form.querySelector('button[type="submit"]');
     
+    const titleEl = document.getElementById('coloring-activity-title');
+    const descEl = document.getElementById('coloring-activity-description');
+    const categoryEl = document.getElementById('coloring-activity-category');
+    const pointsEl = document.getElementById('coloring-activity-points');
+    const durationEl = document.getElementById('coloring-activity-duration');
+    
+    if (!titleEl || !pointsEl || !categoryEl) {
+        showAlert('Form fields not found', 'error');
+        return;
+    }
+    
     const activityData = {
-        title: document.getElementById('coloring-activity-title').value,
-        description: document.getElementById('coloring-activity-description').value,
-        pointsValue: parseInt(document.getElementById('coloring-activity-points').value),
-        category: 'COLORING'
+        title: titleEl.value.trim(),
+        description: descEl ? descEl.value.trim() : '',
+        category: categoryEl.value || 'COLORING',
+        pointsValue: parseInt(pointsEl.value) || 0,
+        estimatedDurationMinutes: durationEl && durationEl.value ? parseInt(durationEl.value) : null
     };
+
+    console.log('Activity data to save:', activityData);
+
+    if (!activityData.title) {
+        showAlert('Title is required', 'error');
+        return;
+    }
 
     setButtonLoading(btn, true);
 
@@ -1192,6 +1410,10 @@ async function handleColoringActivitySubmit(e) {
         
         const method = activityId ? 'PUT' : 'POST';
 
+        console.log('Sending request to:', url, 'Method:', method);
+        console.log('Request body:', JSON.stringify(activityData));
+        console.log('Auth headers:', getAuthHeaders());
+
         const response = await fetch(url, {
             method,
             headers: {
@@ -1201,16 +1423,38 @@ async function handleColoringActivitySubmit(e) {
             body: JSON.stringify(activityData)
         });
 
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || 'Failed to save activity');
+            let errorMessage = 'Failed to save activity';
+            try {
+                const errorData = await response.json();
+                console.error('Error response:', errorData);
+                errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
+            } catch {
+                const errorText = await response.text();
+                console.error('Error text:', errorText);
+                errorMessage = errorText || 'Failed to save activity';
+            }
+            throw new Error(errorMessage);
         }
 
-        showAlert(activityId ? 'Activity updated successfully!' : 'Activity added successfully!', 'success');
+        const result = await response.json();
+        console.log('Activity saved successfully:', result);
+        showAlert(activityId ? 'Activity updated successfully! ✨' : 'Activity added successfully! ✨', 'success');
         closeColoringActivityModal();
-        await loadColoringActivities();
+        
+        // Reload activities based on current page
+        const currentPage = document.querySelector('.page.active');
+        if (currentPage && currentPage.id === 'page-coloring') {
+            await loadColoringActivities();
+        } else {
+            await loadActivities();
+        }
 
     } catch (error) {
+        console.error('Error saving activity:', error);
         showAlert(error.message || 'Failed to save activity', 'error');
     } finally {
         setButtonLoading(btn, false);
