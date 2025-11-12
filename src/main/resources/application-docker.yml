@@ -1,4 +1,7 @@
 # src/main/resources/application-docker.yml
+server:
+  port: 8080
+
 spring:
   datasource:
     url: jdbc:postgresql://postgres-db:5432/kidstinyworld_db

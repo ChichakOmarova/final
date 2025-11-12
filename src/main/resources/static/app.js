@@ -298,11 +298,11 @@ async function handleLogin(e) {
 
         if (!response.ok) {
             let errorMessage = 'Login failed';
+            const errorText = await response.text();
             try {
-                const errorData = await response.json();
+                const errorData = JSON.parse(errorText);
                 errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
             } catch {
-                const errorText = await response.text();
                 errorMessage = errorText || 'Login failed';
             }
             throw new Error(errorMessage);
@@ -357,11 +357,11 @@ async function handleRegister(e) {
 
         if (!response.ok) {
             let errorMessage = 'Registration failed';
+            const errorText = await response.text();
             try {
-                const errorData = await response.json();
+                const errorData = JSON.parse(errorText);
                 errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
             } catch {
-                const errorText = await response.text();
                 errorMessage = errorText || 'Registration failed';
             }
             throw new Error(errorMessage);
@@ -725,11 +725,11 @@ async function handleChildSubmit(e) {
 
         if (!response.ok) {
             let errorMessage = 'Failed to save child';
+            const errorText = await response.text();
             try {
-                const errorData = await response.json();
+                const errorData = JSON.parse(errorText);
                 errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
             } catch {
-                const errorText = await response.text();
                 errorMessage = errorText || 'Failed to save child';
             }
             throw new Error(errorMessage);
@@ -894,11 +894,11 @@ async function deleteActivity(activityId) {
             if (response.status === 403) {
                 errorMessage = 'You are not authorized to delete this activity.';
             } else {
+                const errorText = await response.text();
                 try {
-                    const errorData = await response.json();
+                    const errorData = JSON.parse(errorText);
                     errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
                 } catch {
-                    const errorText = await response.text();
                     errorMessage = errorText || 'Failed to delete activity';
                 }
             }
@@ -1428,12 +1428,12 @@ async function handleColoringActivitySubmit(e) {
 
         if (!response.ok) {
             let errorMessage = 'Failed to save activity';
+            const errorText = await response.text();
             try {
-                const errorData = await response.json();
+                const errorData = JSON.parse(errorText);
                 console.error('Error response:', errorData);
                 errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
             } catch {
-                const errorText = await response.text();
                 console.error('Error text:', errorText);
                 errorMessage = errorText || 'Failed to save activity';
             }
